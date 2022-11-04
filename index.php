@@ -11,8 +11,8 @@
 <html>
 	<head>
 		<title>PixelFlood 0.1</title>
-		<link rel="stylesheet" type="text/css" href="/styles.css">
-		<script type="text/javascript" src="/scripts.js"></script>
+		<link rel="stylesheet" type="text/css" href="styles.css">
+		<script type="text/javascript" src="scripts.js"></script>
 	</head>
 	<body onload="initCanvas()">
 		<h1>PixelFlood 0.1</h1>
@@ -26,7 +26,7 @@
 			<br />
 			<br />
 			<div id="ControlButtons">
-				<button onclick="initGame(<?php echo json_encode($mapData); ?>)">Start game</button>
+				<button onclick="initGame(<?php echo json_encode($mapData); ?>)">Start the Flood</button>
 				<button id="PauseButton" onclick="pause()">Pause</button>
 			</div>
 		</div>

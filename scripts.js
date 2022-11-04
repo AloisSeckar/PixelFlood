@@ -5,6 +5,7 @@ var globalMap; // info about vertexes of player's area polygon
 /* window initialization */
 function initCanvas() {
 	var canvas = document.getElementById("World");
+	var ctx = canvas.getContext('2d', { willReadFrequently: true });
 	// resize canvas to fit into page (thanks http://stackoverflow.com/a/8626338/3204544)
 	var pane = document.getElementById("CentralPanel");
 	canvas.width = pane.clientWidth;
@@ -15,7 +16,7 @@ function initCanvas() {
 /* map initialization */
 function initMap() {
 	var canvas = document.getElementById("World");
-	var ctx = canvas.getContext("2d");
+	var ctx = canvas.getContext('2d', { willReadFrequently: true });
 	// flood fill with green color
 	ctx.fillStyle = "#006600";
 	ctx.fillRect(0,0,canvas.width,canvas.height);
@@ -24,6 +25,8 @@ function initMap() {
 /* initialize new game */
 /* globalMap - given info about player's area */
 function initGame(map) {
+	console.log("init")
+	console.log(map)
 	globalMap = map;
 	// reset map
 	initMap();
@@ -59,8 +62,8 @@ function timerStop() {
 /* periodically in each "frame" while timer is active */
 function drawPlayersArea() {
 	var canvas = document.getElementById("World");
-	var ctx = canvas.getContext("2d");
 	// flood fill with green color
+	var ctx = canvas.getContext('2d', { willReadFrequently: true });
 	ctx.fillStyle = "#006600";
 	ctx.fillRect(0,0,canvas.width,canvas.height);
 	// enclose whole area using stored vertexs
@@ -159,7 +162,7 @@ function analyzePoint(x, y) {
 /* in hex format */
 function getPixelColor(x, y) {
 	var canvas = document.getElementById("World");
-	var ctx = canvas.getContext("2d");
+	var ctx = canvas.getContext('2d', { willReadFrequently: true });
 	// get color of pixel
 	data = ctx.getImageData(x, y, 1, 1).data;
 	// build hex string from extracted data
@@ -187,7 +190,7 @@ function insertMapCoord(point, index) {
 /*
 function drawPixel() {
 	var canvas = document.getElementById("World");
-	var ctx = canvas.getContext("2d");
+	var ctx = canvas.getContext('2d', { willReadFrequently: true });
 	ctx.fillStyle = "#FF0000";
 	var x = Math.floor((Math.random() * canvas.width) + 1); // random x-coord
 	var y = Math.floor((Math.random() * canvas.height) + 1); // random y-coord
