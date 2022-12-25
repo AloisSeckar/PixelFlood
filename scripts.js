@@ -70,21 +70,22 @@ function drawPlayersArea() {
 /* expand player's area  */
 /* somewhere on the "edge" of it */
 function expand() {
-	// randomly select vertex to be expanded
-	var rand_vertex = getRandomVertex();
-	// randomly select expansion direction
-	// (must be place that is not occupied already)
-	var options = analyzePoint(playerArea[rand_vertex][0], playerArea[rand_vertex][1]); // get available expansions (1-3)
-	
-	if (options.length > 0) {
-		var expansion = Math.round(Math.random() * (options.length - 1)); // radomly select one of available
-		playerArea[rand_vertex] = options[expansion]; // expand map in selected direction
-		drawPlayersArea(); // repaint player's area
-	} else {
-		// TODO remove faulty vertex
-		console.log(`nowhere to expand for [${playerArea[rand_vertex][0]}, ${playerArea[rand_vertex][1]}] - skipping turn`)
+	let rand_vertex = 0;
+	let options = [];
+	while (options.length < 1) {
+		// randomly select vertex to be expanded
+		rand_vertex = getRandomVertex();
+ 		// get available expansions (0-3)
+		options = analyzePoint(playerArea[rand_vertex][0], playerArea[rand_vertex][1]);
+		// if 0 options: vertex got enclosed by others => remove it
+		if (options.length < 1) {
+			playerArea.splice(rand_vertex, 1)
+		}
 	}
 	
+	const expansion = Math.round(Math.random() * (options.length - 1)); // radomly select one of available
+	playerArea[rand_vertex] = options[expansion]; // expand map in selected direction
+	drawPlayersArea(); // repaint player's area
 }
 
 /* randomly select vertex of player's area */
@@ -122,7 +123,7 @@ function getRandomVertex() {
 /* check for given point neighbours */
 /* find those that are available for expansion (not red) */
 function analyzePoint(x, y) {
-	var results = [];
+	const results = [];
 	// check "east"
 	if (getPixelColor(x-1,y)!="ff00") {
 		results.push([x-1,y]);
