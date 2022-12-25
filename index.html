@@ -1,12 +1,3 @@
-<?php
-	$mapData = array(
-		array(380,280),
-		array(420,280),
-		array(420,320),
-		array(380,320)
-	);
-?>
-
 <!DOCTYPE html>
 <html>
 	<head>
@@ -26,7 +17,7 @@
 			<br />
 			<br />
 			<div id="ControlButtons">
-				<button onclick="initGame(<?php echo json_encode($mapData); ?>)">Start the Flood</button>
+				<button onclick="initGame()">Start the Flood</button>
 				<button id="PauseButton" onclick="pause()">Pause</button>
 			</div>
 		</div>

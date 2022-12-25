@@ -23,11 +23,16 @@ function initMap() {
 }
 
 /* initialize new game */
-/* globalMap - given info about player's area */
-function initGame(map) {
-	console.log("init")
-	console.log(map)
-	globalMap = map;
+function initGame() {
+
+	// define starting map
+	globalMap = [
+		[380,280],
+		[420,280],
+		[420,320],
+		[380,320],
+	];
+
 	// reset map
 	initMap();
 	// fill player's initial area
