@@ -94,24 +94,22 @@ function expand() {
 	// (must be place that is not occupied already)
 	var options = analyzePoint(globalMap[rand_vertex][0], globalMap[rand_vertex][1]); // get available expansions (1-3)
 	
-	// check for error
-	if (options.length < 1) {
-		var newElement = document.createElement('p');
-		newElement.innerHTML = "encountered problem - nowhere to expand for [" + globalMap[rand_vertex][0] + "," + globalMap[rand_vertex][1] + "] at index " + rand_vertex + "<br /><br />current polygon: " + globalMap;
-		document.getElementById("OutputWindow").appendChild(newElement);
-	} // if error - following code will crash...
+	if (options.length > 0) {
+		var expansion = Math.round(Math.random() * (options.length - 1)); // radomly select one of available
+		globalMap[rand_vertex] = options[expansion]; // expand map in selected direction
+		drawPlayersArea(); // repaint player's area
+	} else {
+		// TODO remove faulty vertex
+		console.log(`nowhere to expand for [${globalMap[rand_vertex][0]}, ${globalMap[rand_vertex][1]}] - skipping turn`)
+	}
 	
-	var expansion = Math.round(Math.random() * (options.length - 1)); // radomly select one of available
-	globalMap[rand_vertex] = options[expansion]; // expand map in selected direction
-	// repaint player's area
-	drawPlayersArea();
 }
 
 /* randomly select vertex of player's area */
 /* either random existing one or split random line to create new */
 function getRandomVertex() {
-	// decide between selecting and splitting (10% chance) // TODO test ideal probability...
-	if (Math.random()>0.9) {
+	// decide between selecting and splitting (1% chance) // TODO test ideal probability...
+	if (Math.random()>0.99) {
 		// split line
 		// first - select one of vertexes
 		var v1 = Math.round(Math.random() * (globalMap.length - 1));
