@@ -1,47 +1,31 @@
-/* global data */
-var globalMap; // info about vertexes of player's area polygon
+// TODO for now it cannot be const due to re-assigning in insertMapCoord()
+// but this should be changed...
+let playerArea = [
+	[380,280],
+	[420,280],
+	[420,320],
+	[380,320],
+];
 
-
-/* window initialization */
-function initCanvas() {
-	var canvas = document.getElementById("World");
-	var ctx = canvas.getContext('2d', { willReadFrequently: true });
+function initMap() {
 	// resize canvas to fit into page (thanks http://stackoverflow.com/a/8626338/3204544)
-	var pane = document.getElementById("CentralPanel");
+	const pane = document.getElementById("CentralPanel");
+	
+	const canvas = document.getElementById("World");
 	canvas.width = pane.clientWidth;
 	canvas.height = pane.clientHeight;
-	initMap();
-}
 
-/* map initialization */
-function initMap() {
-	var canvas = document.getElementById("World");
-	var ctx = canvas.getContext('2d', { willReadFrequently: true });
-	// flood fill with green color
+	const ctx = canvas.getContext('2d', { willReadFrequently: true });
 	ctx.fillStyle = "#006600";
 	ctx.fillRect(0,0,canvas.width,canvas.height);
 }
 
-/* initialize new game */
 function initGame() {
-
-	// define starting map
-	globalMap = [
-		[380,280],
-		[420,280],
-		[420,320],
-		[380,320],
-	];
-
-	// reset map
 	initMap();
-	// fill player's initial area
 	drawPlayersArea();
-	// run game
 	timerStart();
 }
 
-/* pause button */
 function pause() {
 	var btn = document.getElementById("PauseButton");
 	if (btn.innerHTML=="Pause") {
@@ -53,12 +37,10 @@ function pause() {
 	}
 }
 
-/* start game timer */
 function timerStart() {
-	gameTick = setInterval(expand, 50);
+	gameTick = setInterval(expand, 5);
 }
 
-/* stop game timer */
 function timerStop() {
 	clearInterval(gameTick);
 }
@@ -74,13 +56,13 @@ function drawPlayersArea() {
 	// enclose whole area using stored vertexs
 	ctx.fillStyle = "#FF0000";
 	ctx.beginPath();
-	ctx.moveTo(globalMap[0][0],globalMap[0][1]);
+	ctx.moveTo(playerArea[0][0],playerArea[0][1]);
 	index = 1;
-	while (index < globalMap.length) {
-		ctx.lineTo(globalMap[index][0],globalMap[index][1]); 
+	while (index < playerArea.length) {
+		ctx.lineTo(playerArea[index][0],playerArea[index][1]); 
 		index += 1;
 	} 
-	ctx.lineTo(globalMap[0][0],globalMap[0][1]);
+	ctx.lineTo(playerArea[0][0],playerArea[0][1]);
 	ctx.closePath();
 	ctx.fill();
 }
@@ -92,15 +74,15 @@ function expand() {
 	var rand_vertex = getRandomVertex();
 	// randomly select expansion direction
 	// (must be place that is not occupied already)
-	var options = analyzePoint(globalMap[rand_vertex][0], globalMap[rand_vertex][1]); // get available expansions (1-3)
+	var options = analyzePoint(playerArea[rand_vertex][0], playerArea[rand_vertex][1]); // get available expansions (1-3)
 	
 	if (options.length > 0) {
 		var expansion = Math.round(Math.random() * (options.length - 1)); // radomly select one of available
-		globalMap[rand_vertex] = options[expansion]; // expand map in selected direction
+		playerArea[rand_vertex] = options[expansion]; // expand map in selected direction
 		drawPlayersArea(); // repaint player's area
 	} else {
 		// TODO remove faulty vertex
-		console.log(`nowhere to expand for [${globalMap[rand_vertex][0]}, ${globalMap[rand_vertex][1]}] - skipping turn`)
+		console.log(`nowhere to expand for [${playerArea[rand_vertex][0]}, ${playerArea[rand_vertex][1]}] - skipping turn`)
 	}
 	
 }
@@ -112,17 +94,17 @@ function getRandomVertex() {
 	if (Math.random()>0.99) {
 		// split line
 		// first - select one of vertexes
-		var v1 = Math.round(Math.random() * (globalMap.length - 1));
+		var v1 = Math.round(Math.random() * (playerArea.length - 1));
 		// second - get vertex on the line with this vertex
 		var v2;
-		if (v1 == globalMap.length - 1) {
+		if (v1 == playerArea.length - 1) {
 			v2 = 0;
 		} else {
 			v2 = v1 + 1;
 		}
 		// get the midpoint
-		var x_mid = Math.round((globalMap[v1][0] + globalMap[v2][0]) / 2);
-		var y_mid = Math.round((globalMap[v1][1] + globalMap[v2][1]) / 2);
+		var x_mid = Math.round((playerArea[v1][0] + playerArea[v2][0]) / 2);
+		var y_mid = Math.round((playerArea[v1][1] + playerArea[v2][1]) / 2);
 		// create new point
 		var newPoint = [x_mid, y_mid];
 		// insert it into existing vertexes (what, where)
@@ -131,7 +113,7 @@ function getRandomVertex() {
 		return v1 + 1;
 	} else {
 		// just select existing vertex
-		var v1 = Math.round(Math.random() * (globalMap.length - 1));	
+		var v1 = Math.round(Math.random() * (playerArea.length - 1));	
 		//
 		return v1;
 	}
@@ -175,17 +157,17 @@ function getPixelColor(x, y) {
 /* insert given point into existing map coordinates */
 /* create new vertex AFTER given index */
 function insertMapCoord(point, index) {
-	if (index == globalMap.length - 1) {
+	if (index == playerArea.length - 1) {
 		// just append the element to the end
-		globalMap.push(point);
+		playerArea.push(point);
 	} else {
 		// new array must be created from:
 		// part until index (including) + new element at index+1 + rest of orig array
-		arr1 = globalMap.slice(0, index + 1);
+		arr1 = playerArea.slice(0, index + 1);
 		arr2 = [point];
-		arr3 = globalMap.slice(index + 1);
+		arr3 = playerArea.slice(index + 1);
 		//
-		globalMap = arr1.concat(arr2, arr3);
+		playerArea = arr1.concat(arr2, arr3);
 	}
 }
 
