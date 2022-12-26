@@ -1,4 +1,59 @@
+.PageLayout {
+	display: flex;  
+	flex-flow: row wrap;
+	font-weight: bold;
+	text-align: center;
+}
+
+.PageLayout > * {
+	padding: 2px;
+	flex: 1 100%;
+}
+
+.TopPanel {
+	border: 1px solid #6633CC;
+	height: 2rem;
+	padding-bottom: 6px;
+}
+
+.SidePanel {
+	border: 1px solid #6633CC;
+	margin: 2px;
+}
+
+.LeftSidePanel {
+	width: 2rem;
+}
+
+.RightSidePanel {
+	width: 2rem;
+}
+
+.CentralPanel {
+	text-align: center;
+	padding: 5px;
+	min-height: 550px;
+}
+
+.BottomPanel {
+	text-align: center;
+	height: 2rem;
+}
+
+@media all and (min-width: 600px) {
+	.SidePanel { flex: 1 0 0; }
+}
+
+@media all and (min-width: 800px) {
+	.CentralPanel	{ flex: 3 0px; }
+	.LeftSidePanel	{ order: 1; } 
+	.CentralPanel	{ order: 2; }
+	.RightSidePanel { order: 3; }
+	.BottomPanel 	{ order: 4; }
+}
+
 body {
+	padding: 2px;
 	background-color: black;
 }
 
@@ -17,40 +72,6 @@ button {
 	border: 1px solid black;
 	margin: 0px auto;
 	padding: 0px;
-}
-
-#LeftSidePanel, #RightSidePanel {
-    width: 150px;
-    position: absolute;
-    top: 10px;
-	bottom: 50px;
-	border: 1px solid #6633CC;
-	text-align: center;
-	font-size: 10px;
-	word-wrap: break-word;
-	padding: 3px;
-}
-
-#LeftSidePanel {
-    left: 10px;
-}
-
-#RightSidePanel  {
-    right: 10px;
-}
-
-#CentralPanel {
-    margin: 0 175px;
-    position: relative;
-	text-align: center;
-}
-
-#BottomPanel {
-    position: absolute;
-	bottom: 10px;
-	left: 10px;
-	right: 10px;
-	text-align: center;
 }
 
 #ControlButtons {

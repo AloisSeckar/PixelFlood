@@ -9,7 +9,7 @@ let playerArea = [
 
 function initMap() {
 	// resize canvas to fit into page (thanks http://stackoverflow.com/a/8626338/3204544)
-	const pane = document.getElementById("CentralPanel");
+	const pane = document.getElementById("Content");
 	
 	const canvas = document.getElementById("World");
 	canvas.width = pane.clientWidth;

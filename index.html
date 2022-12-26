@@ -1,31 +1,33 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>PixelFlood 0.1</title>
-		<link rel="stylesheet" type="text/css" href="styles.css">
-		<script type="text/javascript" src="scripts.js"></script>
-	</head>
-	<body onload="initMap()">
-		<h1>PixelFlood 0.1</h1>
-		<div id="CentralPanel">
-			<canvas id="World" width="800" height="600" onclick="drawPixel()"></canvas>
+
+<head>
+	<title>PixelFlood 0.1</title>
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	<script type="text/javascript" src="scripts.js"></script>
+</head>
+
+<body onload="initMap()">
+	<div class="PageLayout">
+		<div class="TopPanel">
+			<h1>PixelFlood 0.1</h1>
 		</div>
-		<div id="BottomPanel">
-			<div id="MapCoords">
-			</div>
-			<br />
-			<br />
-			<br />
+		<div class="SidePanel LeftSidePanel">
+			<ul id="OutputWindow">
+			</ul>
+		</div>
+		<div id="Content" class="CentralPanel">
+			<canvas id="World" onclick="drawPixel()"></canvas>
+		</div>
+		<div class="SidePanel RightSidePanel">
+		</div>
+		<div class="BottomPanel">
 			<div id="ControlButtons">
 				<button onclick="initGame()">Start the Flood</button>
 				<button id="PauseButton" onclick="pause()">Pause</button>
 			</div>
 		</div>
-		<div id="LeftSidePanel">
-		 <ul id="OutputWindow">
-		 </ul>
-		</div>
-		<div id="RightSidePanel">
-		</div>
-	</body>
+	</div>
+</body>
+
 </html>
