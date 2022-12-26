@@ -91,8 +91,8 @@ function expand() {
 /* randomly select vertex of player's area */
 /* either random existing one or split random line to create new */
 function getRandomVertex() {
-	// decide between selecting and splitting (1% chance) // TODO test ideal probability...
-	if (Math.random()>0.99) {
+	// decide between selecting and splitting (0.1% chance) // TODO test ideal probability...
+	if (Math.random()>0.999) {
 		// split line
 		// first - select one of vertexes
 		var v1 = Math.round(Math.random() * (playerArea.length - 1));
