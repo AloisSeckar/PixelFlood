@@ -89,34 +89,43 @@ function expand() {
 }
 
 /* randomly select vertex of player's area */
-/* either random existing one or split random line to create new */
+/* either random existing one or split longest line to create new */
 function getRandomVertex() {
-	// decide between selecting and splitting (0.1% chance) // TODO test ideal probability...
-	if (Math.random()>0.999) {
-		// split line
-		// first - select one of vertexes
-		var v1 = Math.round(Math.random() * (playerArea.length - 1));
-		// second - get vertex on the line with this vertex
-		var v2;
-		if (v1 == playerArea.length - 1) {
-			v2 = 0;
-		} else {
-			v2 = v1 + 1;
+	// decide between selecting and splitting (1% chance) // TODO test ideal probability...
+	if (Math.random()>0.99) {
+		const longest = { 
+			length: -1,
+			from: -1,
+			to: -1
+		 }
+		// find the longest line
+		for (let index = 0; index < playerArea.length; index++) {
+			const i1 = index;
+			const i2 = index < playerArea.length - 1 ? index + 1 : 0;
+			
+			const a = playerArea[i1][0] - playerArea[i1][0];
+			const b = playerArea[i1][1] - playerArea[i2][1];
+			const c = Math.sqrt( a*a + b*b );
+
+			if (c > longest.length) {
+				longest.length = c;
+				longest.from = i1;
+				longest.to = i2;
+			}
 		}
+		// split it in half
 		// get the midpoint
-		var x_mid = Math.round((playerArea[v1][0] + playerArea[v2][0]) / 2);
-		var y_mid = Math.round((playerArea[v1][1] + playerArea[v2][1]) / 2);
+		const x_mid = Math.round((playerArea[longest.from][0] + playerArea[longest.to][0]) / 2);
+		const y_mid = Math.round((playerArea[longest.from][1] + playerArea[longest.to][1]) / 2);
 		// create new point
-		var newPoint = [x_mid, y_mid];
+		const newPoint = [x_mid, y_mid];
 		// insert it into existing vertexes (what, where)
-		insertMapCoord(newPoint, v1);
+		insertMapCoord(newPoint, longest.from);
 		//
-		return v1 + 1;
+		return longest.from + 1;
 	} else {
 		// just select existing vertex
-		var v1 = Math.round(Math.random() * (playerArea.length - 1));	
-		//
-		return v1;
+		return Math.round(Math.random() * (playerArea.length - 1));
 	}
 }
 
