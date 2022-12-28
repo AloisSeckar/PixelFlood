@@ -1,11 +1,34 @@
 // TODO for now it cannot be const due to re-assigning in insertMapCoord()
 // but this should be changed...
-let playerArea = [
-	[380,280],
-	[420,280],
-	[420,320],
-	[380,320],
-];
+let player = {
+	color: "#0066FF",
+	area: [
+		[240,240],
+		[280,240],
+		[280,280],
+		[240,280],
+	]
+};
+
+let pc1 = {
+	color: "#FF0000",
+	area: [
+		[40,40],
+		[80,40],
+		[80,80],
+		[40,80],
+	]
+};
+
+let pc2 = {
+	color: "#FFCC00",
+	area: [
+		[440,440],
+		[480,440],
+		[480,480],
+		[440,480],
+	]
+};
 
 function initMap() {
 	// resize canvas to fit into page (thanks http://stackoverflow.com/a/8626338/3204544)
@@ -22,7 +45,7 @@ function initMap() {
 
 function initGame() {
 	initMap();
-	drawPlayersArea();
+	repaintMap();
 	timerStart();
 }
 
@@ -38,73 +61,86 @@ function pause() {
 }
 
 function timerStart() {
-	gameTick = setInterval(expand, 5);
+	gameTick = setInterval(expandAll, 5);
 }
 
 function timerStop() {
 	clearInterval(gameTick);
 }
 
-/* player's area repaint */
+/* player's areas repaint */
 /* periodically in each "frame" while timer is active */
-function drawPlayersArea() {
+function repaintMap() {
 	var canvas = document.getElementById("World");
 	// flood fill with green color
 	var ctx = canvas.getContext('2d', { willReadFrequently: true });
 	ctx.fillStyle = "#006600";
 	ctx.fillRect(0,0,canvas.width,canvas.height);
 	// enclose whole area using stored vertexs
-	ctx.fillStyle = "#FF0000";
+	repaintPlayerArea(ctx, player.color, player.area)
+	repaintPlayerArea(ctx, pc1.color, pc1.area)
+	repaintPlayerArea(ctx, pc2.color, pc2.area)
+}
+
+function repaintPlayerArea(ctx, color, area) {
+	ctx.fillStyle = color;
 	ctx.beginPath();
-	ctx.moveTo(playerArea[0][0],playerArea[0][1]);
+	ctx.moveTo(area[0][0],area[0][1]);
 	index = 1;
-	while (index < playerArea.length) {
-		ctx.lineTo(playerArea[index][0],playerArea[index][1]); 
+	while (index < area.length) {
+		ctx.lineTo(area[index][0],area[index][1]); 
 		index += 1;
 	} 
-	ctx.lineTo(playerArea[0][0],playerArea[0][1]);
+	ctx.lineTo(area[0][0],area[0][1]);
 	ctx.closePath();
 	ctx.fill();
 }
 
+function expandAll() {
+	expand(player)
+	expand(pc1)
+	expand(pc2)
+	repaintMap(); // repaint player's area
+}
+
 /* expand player's area  */
 /* somewhere on the "edge" of it */
-function expand() {
+function expand(entity) {
 	let rand_vertex = 0;
 	let options = [];
 	while (options.length < 1) {
 		// randomly select vertex to be expanded
-		rand_vertex = getRandomVertex();
+		rand_vertex = getRandomVertex(entity);
  		// get available expansions (0-3)
-		options = analyzePoint(playerArea[rand_vertex][0], playerArea[rand_vertex][1]);
+		options = analyzePoint(entity.area[rand_vertex][0], entity.area[rand_vertex][1]);
 		// if 0 options: vertex got enclosed by others => remove it
 		if (options.length < 1) {
-			playerArea.splice(rand_vertex, 1)
+			entity.area.splice(rand_vertex, 1)
 		}
 	}
 	
 	const expansion = Math.round(Math.random() * (options.length - 1)); // radomly select one of available
-	playerArea[rand_vertex] = options[expansion]; // expand map in selected direction
-	drawPlayersArea(); // repaint player's area
+	entity.area[rand_vertex] = options[expansion]; // expand map in selected direction
 }
 
 /* randomly select vertex of player's area */
 /* either random existing one or split longest line to create new */
-function getRandomVertex() {
+function getRandomVertex(entity) {
 	// decide between selecting and splitting (1% chance) // TODO test ideal probability...
 	if (Math.random()>0.99) {
+		const area = entity.area
 		const longest = { 
 			length: -1,
 			from: -1,
 			to: -1
 		 }
 		// find the longest line
-		for (let index = 0; index < playerArea.length; index++) {
+		for (let index = 0; index < area.length; index++) {
 			const i1 = index;
-			const i2 = index < playerArea.length - 1 ? index + 1 : 0;
+			const i2 = index < area.length - 1 ? index + 1 : 0;
 			
-			const a = playerArea[i1][0] - playerArea[i1][0];
-			const b = playerArea[i1][1] - playerArea[i2][1];
+			const a = area[i1][0] - area[i1][0];
+			const b = area[i1][1] - area[i2][1];
 			const c = Math.sqrt( a*a + b*b );
 
 			if (c > longest.length) {
@@ -115,17 +151,17 @@ function getRandomVertex() {
 		}
 		// split it in half
 		// get the midpoint
-		const x_mid = Math.round((playerArea[longest.from][0] + playerArea[longest.to][0]) / 2);
-		const y_mid = Math.round((playerArea[longest.from][1] + playerArea[longest.to][1]) / 2);
+		const x_mid = Math.round((area[longest.from][0] + area[longest.to][0]) / 2);
+		const y_mid = Math.round((area[longest.from][1] + area[longest.to][1]) / 2);
 		// create new point
 		const newPoint = [x_mid, y_mid];
 		// insert it into existing vertexes (what, where)
-		insertMapCoord(newPoint, longest.from);
+		insertMapCoord(entity, newPoint, longest.from);
 		//
 		return longest.from + 1;
 	} else {
 		// just select existing vertex
-		return Math.round(Math.random() * (playerArea.length - 1));
+		return Math.round(Math.random() * (entity.area.length - 1));
 	}
 }
 
@@ -134,19 +170,19 @@ function getRandomVertex() {
 function analyzePoint(x, y) {
 	const results = [];
 	// check "east"
-	if (getPixelColor(x-1,y)!="ff00") {
+	if (getPixelColor(x-1,y)=="006600") {
 		results.push([x-1,y]);
 	}
 	// check "west"
-	if (getPixelColor(x+1,y)!="ff00") {
+	if (getPixelColor(x+1,y)=="006600") {
 		results.push([x+1,y]);
 	}
 	// check "north"
-	if (getPixelColor(x,y-1)!="ff00") {
+	if (getPixelColor(x,y-1)=="006600") {
 		results.push([x,y-1]);
 	}
 	// check "south"
-	if (getPixelColor(x,y+1)!="ff00") {
+	if (getPixelColor(x,y+1)=="006600") {
 		results.push([x,y+1]);
 	}
 	//
@@ -161,23 +197,23 @@ function getPixelColor(x, y) {
 	// get color of pixel
 	data = ctx.getImageData(x, y, 1, 1).data;
 	// build hex string from extracted data
-	return data[0].toString(16) + data[1].toString(16) + data[2].toString(16);
+	return data[0].toString(16).padStart(2, '0') + data[1].toString(16).padStart(2, '0') + data[2].toString(16).padStart(2, '0');
 }
 
 /* insert given point into existing map coordinates */
 /* create new vertex AFTER given index */
-function insertMapCoord(point, index) {
-	if (index == playerArea.length - 1) {
+function insertMapCoord(entity, point, index) {
+	if (index == entity.area.length - 1) {
 		// just append the element to the end
-		playerArea.push(point);
+		entity.area.push(point);
 	} else {
 		// new array must be created from:
 		// part until index (including) + new element at index+1 + rest of orig array
-		arr1 = playerArea.slice(0, index + 1);
+		arr1 = entity.area.slice(0, index + 1);
 		arr2 = [point];
-		arr3 = playerArea.slice(index + 1);
+		arr3 = entity.area.slice(index + 1);
 		//
-		playerArea = arr1.concat(arr2, arr3);
+		entity.area = arr1.concat(arr2, arr3);
 	}
 }
 
