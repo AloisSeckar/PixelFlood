@@ -62,7 +62,7 @@ function pause() {
 
 function timerStart() {
 	gameTick = setInterval(expandAll, 5);
-	score = setInterval(countScore, 500);
+	score = setInterval(countScore, 200);
 }
 
 function timerStop() {
@@ -232,29 +232,27 @@ function drawPixel() {
 */
 
 function countScore() {
-	// from blog: 
-	// https://www.thecodingcouple.com/counting-pixels-in-the-browser-with-the-html5-canvas-and-the-imagedata-object/
-
-	const canvas = document.getElementById('World');
-	const context = canvas.getContext('2d');  
-	const data = context.getImageData(0, 0, canvas.width, canvas.height).data;
-
-	const colorCounts = [];
-    for(let index = 0; index < data.length; index += 4) {
-        const rgba = `rgba(${data[index]}, ${data[index + 1]}, ${data[index + 2]}, ${(data[index + 3] / 255)})`;
-        if (rgba in colorCounts) {
-            colorCounts[rgba] += 1;
-        } else {
-            colorCounts[rgba] = 1;
-        }
-    }
-
 	let currentScore = '';
-	currentScore += "PLR: " + colorCounts['rgba(0, 102, 255, 1)'] + '<br />';
-	currentScore += "PC1: " + colorCounts['rgba(255, 0, 0, 1)'] + '<br />';
-	currentScore += "PC2: " + colorCounts['rgba(255, 204, 0, 1)'] + '<br />';
+	currentScore += "PLR: " + calcArea(player.area) + '<br />';
+	currentScore += "PC1: " + calcArea(pc1.area) + '<br />';
+	currentScore += "PC2: " + calcArea(pc2.area) + '<br />';
 
 	const scores = document.getElementById('Scores');
 	scores.innerHTML = currentScore;
+}
 
+function calcArea(vertices) {
+    var total = 0;
+
+    for (var i = 0, l = vertices.length; i < l; i++) {
+      var addX = vertices[i][0];
+      var addY = vertices[i == vertices.length - 1 ? 0 : i + 1][1];
+      var subX = vertices[i == vertices.length - 1 ? 0 : i + 1][0];
+      var subY = vertices[i][1];
+
+      total += (addX * addY * 0.5);
+      total -= (subX * subY * 0.5);
+    }
+
+    return Math.abs(total);
 }
