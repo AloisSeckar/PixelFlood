@@ -61,12 +61,14 @@ function pause() {
 }
 
 function timerStart() {
-	gameTick = setInterval(expandAll, 5);
+	expansion = setInterval(expandAll, 5);
+	repaint = setInterval(repaintMap, 20);
 	score = setInterval(countScore, 200);
 }
 
 function timerStop() {
-	clearInterval(gameTick);
+	clearInterval(expansion);
+	clearInterval(repaint);
 	clearInterval(score);
 }
 
@@ -99,10 +101,9 @@ function repaintPlayerArea(ctx, color, area) {
 }
 
 function expandAll() {
-	expand(player)
-	expand(pc1)
-	expand(pc2)
-	repaintMap(); // repaint player's area
+	expand(player);
+	expand(pc1);
+	expand(pc2);
 }
 
 /* expand player's area  */
